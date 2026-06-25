@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Triết Học Chuyên Sâu</title>
+<style>
+*{box-sizing:border-box}
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f7fb;
+    margin:0;
+    padding:20px;
+    color:#222;
+}
+.container{
+    max-width:850px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+h1{
+    text-align:center;
+    margin-top:0;
+}
+.progress-wrap{
+    width:100%;
+    background:#e5e7eb;
+    height:14px;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:20px;
+}
+.progress{
+    height:100%;
+    width:0%;
+    background:#2563eb;
+    transition:.4s;
+}
+.question-number{
+    color:#666;
+    margin-bottom:10px;
+}
+.question{
+    font-size:1.15rem;
+    line-height:1.6;
+    margin-bottom:18px;
+}
+.option{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:14px;
+    margin:8px 0;
+    border:2px solid #d1d5db;
+    border-radius:12px;
+    background:white;
+    cursor:pointer;
+    transition:.2s;
+    font-size:1rem;
+}
+.option:hover{
+    background:#f3f4f6;
+}
+.correct{
+    background:#dcfce7 !important;
+    border-color:#22c55e !important;
+}
+.wrong{
+    background:#fee2e2 !important;
+    border-color:#ef4444 !important;
+}
+.explanation{
+    margin-top:16px;
+    padding:14px;
+    border-left:5px solid #2563eb;
+    background:#eff6ff;
+    border-radius:8px;
+    line-height:1.6;
+}
+.next-btn{
+    margin-top:18px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-size:1rem;
+    cursor:pointer;
+}
+.next-btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+.result{
+    display:none;
+}
+.score{
+    font-size:2rem;
+    font-weight:bold;
+    text-align:center;
+}
+.section{
+    margin-top:18px;
+    padding:12px;
+    background:#f8fafc;
+    border-radius:10px;
+}
+ul{
+    padding-left:20px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🧠 Quiz Triết Học Chuyên Sâu</h1>
+
+<div class="progress-wrap">
+<div class="progress" id="progress"></div>
+</div>
+
+<div id="quiz">
+<div class="question-number" id="qNumber"></div>
+<div class="question" id="question"></div>
+<div id="options"></div>
+<div id="explanation" class="explanation" style="display:none"></div>
+<button id="nextBtn" class="next-btn" disabled>Câu tiếp theo</button>
+</div>
+
+<div class="result" id="result">
+<h2 style="text-align:center">Kết quả</h2>
+<div class="score" id="score"></div>
+
+<div class="section">
+<h3>Nhận xét năng lực</h3>
+<div id="evaluation"></div>
+</div>
+
+<div class="section">
+<h3>Gợi ý ôn tập</h3>
+<div id="review"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+const questions = [
+
+{
+category:"Ontology",
+question:"Một nhà khoa học cho rằng mọi hiện tượng ý thức chỉ là kết quả của các quá trình vật chất trong não bộ. Quan điểm này gần nhất với lập trường nào?",
+options:[
+"Chủ nghĩa duy vật",
+"Chủ nghĩa duy tâm khách quan",
+"Nhị nguyên luận",
+"Thuyết bất khả tri"
+],
+answer:0,
+explanation:"Chủ nghĩa duy vật khẳng định vật chất có trước và quyết định ý thức. Trong tình huống này, ý thức được giải thích như kết quả của hoạt động vật chất của não bộ. Điều đó phù hợp với lập trường duy vật vì không cần viện dẫn thực thể tinh thần độc lập hay lực lượng siêu nhiên để giải thích hiện tượng tâm thức."
+},
+
+{
+category:"Epistemology",
+question:"Descartes nghi ngờ mọi thứ nhưng vẫn khẳng định 'Tôi tư duy nên tôi tồn tại'. Điều này nhằm chứng minh điều gì?",
+options:[
+"Không có chân lý nào tồn tại",
+"Tri thức chắc chắn phải bắt đầu từ nền tảng không thể nghi ngờ",
+"Chỉ cảm giác mới tạo ra tri thức",
+"Con người không thể nhận thức thế giới"
+],
+answer:1,
+explanation:"Phương pháp hoài nghi của Descartes không nhằm phủ nhận tri thức mà nhằm tìm ra điểm tựa tuyệt đối chắc chắn. Việc nhận ra bản thân đang tư duy là điều không thể phủ nhận. Từ nền tảng đó, ông xây dựng toàn bộ hệ thống nhận thức luận về tri thức đáng tin cậy."
+},
+
+{
+category:"Dialectics",
+question:"Một công ty cố gắng loại bỏ hoàn toàn xung đột nội bộ để đạt ổn định lâu dài. Theo phép biện chứng, sai lầm chính là gì?",
+options:[
+"Đánh giá quá cao vai trò của lãnh đạo",
+"Không coi trọng lợi nhuận",
+"Phủ nhận vai trò của mâu thuẫn trong phát triển",
+"Tin vào sự thay đổi"
+],
+answer:2,
+explanation:"Theo phép biện chứng, mâu thuẫn là nguồn gốc của vận động và phát triển. Việc loại bỏ mọi mâu thuẫn sẽ dẫn tới đình trệ thay vì tiến bộ. Vấn đề không phải xóa bỏ mâu thuẫn mà là nhận diện, quản lý và giải quyết chúng theo hướng tạo ra hình thái phát triển mới."
+},
+
+{
+category:"Hegel",
+question:"Trong phép biện chứng Hegel, động lực sâu xa của lịch sử là gì?",
+options:[
+"Đấu tranh giai cấp",
+"Sự phát triển của Ý niệm tuyệt đối",
+"Ngẫu nhiên lịch sử",
+"Tiến bộ khoa học kỹ thuật"
+],
+answer:1,
+explanation:"Hegel xem lịch sử là quá trình tự triển khai của Tinh thần hay Ý niệm tuyệt đối. Các mâu thuẫn và biến đổi lịch sử phản ánh sự phát triển của tinh thần tự ý thức về chính mình. Đây là lập trường duy tâm biện chứng khác với chủ nghĩa duy vật lịch sử của Marx."
+},
+
+{
+category:"Marx",
+question:"Một công nghệ mới làm năng suất tăng mạnh nhưng luật sở hữu cũ cản trở việc áp dụng. Theo Marx, đây là biểu hiện của mâu thuẫn nào?",
+options:[
+"Lực lượng sản xuất và quan hệ sản xuất",
+"Cơ sở hạ tầng và đạo đức",
+"Ý thức và vật chất",
+"Cái riêng và cái chung"
+],
+answer:0,
+explanation:"Trong chủ nghĩa duy vật lịch sử, lực lượng sản xuất thường phát triển nhanh hơn quan hệ sản xuất. Khi quan hệ sản xuất trở thành 'xiềng xích' đối với lực lượng sản xuất, mâu thuẫn nảy sinh. Sự thay đổi thể chế hoặc cách mạng xã hội thường xuất hiện để giải quyết mâu thuẫn này."
+},
+
+{
+category:"Ethics",
+question:"Theo Kant, hành động nào có giá trị đạo đức cao nhất?",
+options:[
+"Làm điều tốt vì sợ bị phạt",
+"Làm điều tốt để được khen",
+"Làm điều tốt vì nghĩa vụ đạo đức",
+"Làm điều tốt vì lợi ích cá nhân"
+],
+answer:2,
+explanation:"Đạo đức học Kant nhấn mạnh động cơ hơn kết quả. Một hành động chỉ thực sự có giá trị đạo đức khi được thực hiện vì tôn trọng bổn phận và quy luật đạo đức phổ quát. Nếu hành động xuất phát từ lợi ích hay cảm xúc cá nhân thì giá trị đạo đức giảm đáng kể."
+},
+
+{
+category:"Plato",
+question:"Nếu một xã hội ra quyết định hoàn toàn dựa trên dư luận nhất thời, Plato có thể phê phán điều gì?",
+options:[
+"Thiếu sức mạnh quân sự",
+"Thiếu hiểu biết về thế giới ý niệm và tri thức chân chính",
+"Quá nhiều luật pháp",
+"Thiếu tự do cá nhân"
+],
+answer:1,
+explanation:"Plato cho rằng tri thức chân chính không đến từ ý kiến số đông mà từ việc nhận thức các Ý niệm bất biến. Một xã hội chỉ chạy theo dư luận dễ bị dẫn dắt bởi cảm tính và ảo tưởng. Vì vậy ông đề cao vai trò của những người cai trị có tri thức triết học."
+},
+
+{
+category:"Logic",
+question:"Lập luận nào hợp lệ về mặt logic?",
+options:[
+"Nếu trời mưa thì đường ướt. Đường ướt nên trời mưa.",
+"Nếu trời mưa thì đường ướt. Trời mưa nên đường ướt.",
+"Nếu học giỏi thì đỗ. Đỗ nên học giỏi.",
+"Nếu A thì B. B nên A."
+],
+answer:1,
+explanation:"Đây là dạng Modus Ponens: Nếu A thì B; A xảy ra; do đó B xảy ra. Đây là quy tắc suy luận hợp lệ. Các lựa chọn còn lại mắc lỗi khẳng định hệ quả, vì từ B không thể chắc chắn suy ra A do B có thể xuất phát từ nguyên nhân khác."
+},
+
+{
+category:"Aristotle",
+question:"Một nhà quản lý luôn tìm giải pháp cân bằng giữa cực đoan khắc nghiệt và dễ dãi. Điều này gần với quan điểm nào của Aristotle?",
+options:[
+"Thuyết ý niệm",
+"Chủ nghĩa hư vô",
+"Đức hạnh là trung đạo",
+"Mệnh lệnh tuyệt đối"
+],
+answer:2,
+explanation:"Aristotle cho rằng đức hạnh thường nằm ở điểm trung dung giữa hai thái cực. Can đảm nằm giữa hèn nhát và liều lĩnh; hào phóng nằm giữa keo kiệt và phung phí. Nhà quản lý tìm sự cân bằng hợp lý đang áp dụng tinh thần trung đạo trong đạo đức học Aristotle."
+},
+
+{
+category:"Nietzsche",
+question:"Nietzsche phê phán điều gì khi tuyên bố 'Thượng đế đã chết'?",
+options:[
+"Sự tồn tại vật lý của thần linh",
+"Sự suy yếu của các giá trị tuyệt đối truyền thống",
+"Khoa học tự nhiên",
+"Nhà nước hiện đại"
+],
+answer:1,
+explanation:"Câu nói nổi tiếng của Nietzsche phản ánh khủng hoảng giá trị trong xã hội hiện đại. Ông cho rằng các nền tảng đạo đức và tôn giáo truyền thống mất dần sức mạnh định hướng. Con người phải tự sáng tạo giá trị mới thay vì phụ thuộc vào những chuẩn mực cũ."
+},
+
+{
+category:"Dialectics",
+question:"Một sinh viên tích lũy kiến thức từng ngày rồi đột nhiên hiểu sâu một chủ đề khó. Đây là ví dụ rõ nhất của quy luật nào?",
+options:[
+"Phủ định của phủ định",
+"Lượng đổi dẫn tới chất đổi",
+"Thống nhất đối lập",
+"Nguyên nhân kết quả"
+],
+answer:1,
+explanation:"Quy luật lượng – chất cho rằng những thay đổi nhỏ về lượng được tích lũy dần dần sẽ dẫn tới bước nhảy về chất khi đạt điểm nút. Quá trình học tập là ví dụ điển hình: kiến thức tích lũy lâu dài cuối cùng tạo ra sự thay đổi về trình độ hiểu biết."
+},
+
+{
+category:"Political Philosophy",
+question:"Theo chủ nghĩa duy vật lịch sử, yếu tố nào có vai trò nền tảng nhất trong việc hình thành thể chế chính trị?",
+options:[
+"Sở thích cá nhân của lãnh đạo",
+"Cơ cấu kinh tế và quan hệ sản xuất",
+"Khí hậu",
+"Tôn giáo cá nhân"
+],
+answer:1,
+explanation:"Marx cho rằng cơ sở kinh tế giữ vai trò quyết định đối với kiến trúc thượng tầng, bao gồm nhà nước, pháp luật và chính trị. Dù các yếu tố khác có ảnh hưởng, nhưng để hiểu sự vận động của thể chế cần phân tích nền tảng kinh tế và các quan hệ sản xuất."
+},
+
+{
+category:"Epistemology",
+question:"Một lý thuyết khoa học chỉ được chấp nhận sau nhiều thí nghiệm thành công. Điều này phản ánh nguyên tắc nào?",
+options:[
+"Thực tiễn là tiêu chuẩn của chân lý",
+"Mọi chân lý đều chủ quan",
+"Tri thức là bẩm sinh",
+"Chân lý do đa số quyết định"
+],
+answer:0,
+explanation:"Trong nhận thức luận duy vật biện chứng, thực tiễn là tiêu chuẩn kiểm nghiệm chân lý. Một giả thuyết dù hợp lý đến đâu vẫn phải được kiểm chứng bằng hoạt động thực nghiệm. Thành công lặp lại trong thực tiễn là cơ sở quan trọng để xác nhận tính đúng đắn của tri thức."
+},
+
+{
+category:"Dialectics",
+question:"Trong quá trình phát triển xã hội, cái mới thay thế cái cũ nhưng vẫn giữ lại những yếu tố tích cực của cái cũ. Đây là đặc trưng của:",
+options:[
+"Phủ định siêu hình",
+"Ngẫu nhiên",
+"Phủ định biện chứng",
+"Nhị nguyên luận"
+],
+answer:2,
+explanation:"Phủ định biện chứng không phải sự xóa bỏ hoàn toàn mà là quá trình vượt bỏ có kế thừa. Cái mới tiếp nhận những yếu tố còn giá trị của cái cũ đồng thời loại bỏ phần lạc hậu. Nhờ vậy sự phát triển diễn ra theo hình xoắn ốc và ngày càng hoàn thiện hơn."
+},
+
+{
+category:"Synthesis",
+question:"Điểm khác biệt cốt lõi giữa Marx và Hegel về phép biện chứng là gì?",
+options:[
+"Marx phủ nhận mâu thuẫn",
+"Hegel duy vật còn Marx duy tâm",
+"Marx đặt cơ sở biện chứng ở vật chất và đời sống xã hội",
+"Cả hai hoàn toàn giống nhau"
+],
+answer:2,
+explanation:"Hegel xây dựng phép biện chứng trên nền tảng duy tâm, xem sự phát triển của Ý niệm là động lực căn bản. Marx tiếp thu hạt nhân hợp lý của phép biện chứng nhưng đặt nó trên cơ sở duy vật. Ông cho rằng vật chất, thực tiễn và đời sống xã hội mới là nền tảng của vận động lịch sử."
+}
+
+];
+
+let current=0;
+let score=0;
+let wrongTopics=[];
+
+const qNumber=document.getElementById("qNumber");
+const question=document.getElementById("question");
+const options=document.getElementById("options");
+const explanation=document.getElementById("explanation");
+const nextBtn=document.getElementById("nextBtn");
+const progress=document.getElementById("progress");
+
+function loadQuestion(){
+const q=questions[current];
+
+qNumber.textContent=`Câu ${current+1} / ${questions.length}`;
+question.textContent=q.question;
+options.innerHTML="";
+explanation.style.display="none";
+nextBtn.disabled=true;
+
+q.options.forEach((opt,index)=>{
+const btn=document.createElement("button");
+btn.className="option";
+btn.textContent=String.fromCharCode(65+index)+". "+opt;
+btn.onclick=()=>selectAnswer(index,btn);
+options.appendChild(btn);
+});
+
+progress.style.width=((current)/questions.length)*100+"%";
+}
+
+function selectAnswer(index,btn){
+const q=questions[current];
+const all=document.querySelectorAll(".option");
+
+all.forEach(b=>b.disabled=true);
+
+all[q.answer].classList.add("correct");
+
+if(index===q.answer){
+score++;
+}else{
+btn.classList.add("wrong");
+wrongTopics.push(q.category);
+}
+
+explanation.innerHTML="<strong>Giải thích:</strong> "+q.explanation;
+explanation.style.display="block";
+nextBtn.disabled=false;
+}
+
+nextBtn.onclick=()=>{
+current++;
+if(current<questions.length){
+loadQuestion();
+}else{
+showResult();
+}
+};
+
+function showResult(){
+document.getElementById("quiz").style.display="none";
+document.getElementById("result").style.display="block";
+
+progress.style.width="100%";
+
+const percent=Math.round(score/questions.length*100);
+
+document.getElementById("score").innerHTML=
+`${score}/${questions.length} (${percent}%)`;
+
+let evalText="";
+
+if(percent>=90){
+evalText="Xuất sắc. Bạn có khả năng phân tích các vấn đề triết học ở mức rất tốt, đặc biệt là tư duy biện chứng và so sánh các hệ thống triết học.";
+}else if(percent>=75){
+evalText="Khá tốt. Bạn nắm được phần lớn khái niệm cốt lõi nhưng vẫn còn vài điểm cần đào sâu ở các câu ứng dụng.";
+}else if(percent>=60){
+evalText="Mức trung bình khá. Bạn hiểu lý thuyết cơ bản nhưng cần luyện thêm các tình huống phân tích và liên hệ thực tiễn.";
+}else{
+evalText="Cần ôn tập thêm. Hãy tập trung vào các khái niệm nền tảng và mối liên hệ giữa các trường phái triết học.";
+}
+
+document.getElementById("evaluation").innerHTML=evalText;
+
+let review="";
+
+if(wrongTopics.length===0){
+review="Không có chủ đề sai. Hãy thử đọc thêm các tác phẩm gốc của Plato, Kant, Hegel và Marx để nâng cao chiều sâu tư duy.";
+}else{
+const unique=[...new Set(wrongTopics)];
+review="<ul>";
+unique.forEach(t=>{
+review+=`<li>Ôn tập chuyên đề: <strong>${t}</strong></li>`;
+});
+review+="</ul>";
+}
+
+document.getElementById("review").innerHTML=review;
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
